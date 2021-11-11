@@ -66,7 +66,7 @@ with strategy.scope():
         layers.Conv2D(256, 3, padding='same', activation='relu'),
         layers.experimental.preprocessing.Normalization(),
         layers.MaxPooling2D(),
-        layers.Dropout(),
+        layers.Dropout(.15),
         layers.Flatten(),
         layers.Dense(64, activation='relu'),
         layers.Dense(num_classes)
