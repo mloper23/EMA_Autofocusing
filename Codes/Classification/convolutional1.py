@@ -27,8 +27,7 @@ def dataset(dir_path, height, width, color, batch):
         batch_size=batch,
         color_mode=color)
     test = tf.keras.preprocessing.image_dataset_from_directory(
-        dir_path,
-        validation_split=0.2,
+        dir_path,        validation_split=0.2,
         subset="validation",
         seed=123,
         image_size=(img_height, img_width),

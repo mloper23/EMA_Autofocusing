@@ -5,11 +5,11 @@ import pandas as pd
 import os
 
 batch_size = 32
-epochs = 50
-path = os.path.dirname(os.path.dirname(os.getcwd()))
-data_dir = rf'{path}\Datasets\Small_E\Holors'
-title = f"3SmallE_Convolution2_{epochs}_Epochs_PC"
-# data_dir = r"/home/mloper23/Datasets/E+S/Holors"
+epochs = 150
+# path = os.path.dirname(os.path.dirname(os.getcwd()))
+# data_dir = rf'{path}\Datasets\Small_E\Holors'
+title = f"3E_Convolution2_{epochs}_Epochs"
+data_dir = r"/home/mloper23/Datasets/E/Holors"
 
 # tf.debugging.set_log_device_placement(True)
 gpus = tf.config.list_physical_devices('GPU')
@@ -51,24 +51,25 @@ strategy = tf.distribute.MirroredStrategy(gpus)
 with strategy.scope():
     model = Sequential([
         layers.experimental.preprocessing.Rescaling(1. / 255, input_shape=(img_height, img_width, 1)),
-        layers.Conv2D(64, 7, padding='same', activation='relu'),
-        layers.experimental.preprocessing.Normalization(),
+        layers.Conv2D(32, 7, padding='same', activation='relu'),
+        layers.BatchNormalization(),
         layers.MaxPooling2D(),
-        layers.Conv2D(128, 5, padding='same', activation='relu'),
-        layers.experimental.preprocessing.Normalization(),
+        layers.Conv2D(64, 5, padding='same', activation='relu'),
+        layers.BatchNormalization(),
         layers.MaxPooling2D(),
-        layers.Conv2D(128, 5, padding='same', activation='relu'),
-        layers.experimental.preprocessing.Normalization(),
+        layers.Conv2D(64, 5, padding='same', activation='relu'),
+        layers.BatchNormalization(),
         layers.MaxPooling2D(),
-        layers.Conv2D(256, 3, padding='same', activation='relu'),
-        layers.experimental.preprocessing.Normalization(),
+        layers.Conv2D(128, 3, padding='same', activation='relu'),
+        layers.BatchNormalization(),
         layers.MaxPooling2D(),
-        layers.Conv2D(256, 3, padding='same', activation='relu'),
-        layers.experimental.preprocessing.Normalization(),
+        layers.Conv2D(128, 3, padding='same', activation='relu'),
+        layers.BatchNormalization(),
         layers.MaxPooling2D(),
         layers.Dropout(.15),
         layers.Flatten(),
-        layers.Dense(64, activation='relu'),
+        layers.Dense(512, activation='relu'),
+        layers.Dense(512, activation='relu'),
         layers.Dense(num_classes)
     ])
     model.summary()

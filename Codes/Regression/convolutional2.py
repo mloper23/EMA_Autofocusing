@@ -1,9 +1,8 @@
-# Simple linear regression place the dataset route in data_dir
-# To save model and checkpoints create two dirs: models and training_plots
-# Maria J Lopera
 from skimage.io import imread
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
+from tensorflow.keras import layers
+from tensorflow.keras.models import Sequential
 import numpy as np
 import math
 import pandas as pd
@@ -12,10 +11,10 @@ import os
 # Create a list of epochs
 epochs = 150
 batch_size = 128
-title = f"4E_LinearRegression_{epochs}_Epochs"
-data_dir = r"/home/mloper23/Datasets/E/Holors"
+title = f"7E+S_Convolution2_{epochs}_Epochs"
 # path = os.path.dirname(os.path.dirname(os.getcwd()))
 # data_dir = rf'{path}\Datasets\Small_E\Holors'
+data_dir = r"/home/mloper23/Datasets/E+S/Holors"
 
 df = pd.read_excel(r'/home/mloper23/Dataframes/HolorsTotal.xlsx')
 # df = pd.read_excel(r'C:\Users\mlope\OneDrive - Universidad EAFIT\EAFIT\Autofocusing\Dataframes\HolorsTotal.xlsx')
@@ -79,12 +78,28 @@ sequence_val = LoadImagesValidation(x_test, y_test, data_dir, 32)
 
 with strategy.scope():
     # Model creation
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.experimental.preprocessing.Rescaling(1. / 255, input_shape=(img_height, img_width, 1)),
-        tf.keras.layers.Flatten(input_shape=(img_width, img_height, 1)),
-        # tf.keras.layers.Dense(1, input_dim=img_height * img_width, activation=tf.nn.elu),
-        # tf.keras.layers.Dense(1, activation=tf.nn.relu),
-        tf.keras.layers.Dense(1)
+    model = Sequential([
+        layers.experimental.preprocessing.Rescaling(1. / 255, input_shape=(img_height, img_width, 1)),
+        layers.Conv2D(32, 7, padding='same', activation='relu'),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D(),
+        layers.Conv2D(64, 5, padding='same', activation='relu'),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D(),
+        layers.Conv2D(64, 5, padding='same', activation='relu'),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D(),
+        layers.Conv2D(128, 3, padding='same', activation='relu'),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D(),
+        layers.Conv2D(128, 3, padding='same', activation='relu'),
+        layers.BatchNormalization(),
+        layers.MaxPooling2D(),
+        layers.Dropout(.15),
+        layers.Flatten(),
+        layers.Dense(512, activation='relu'),
+        layers.Dense(512, activation='relu'),
+        layers.Dense(1)
     ])
     model.summary()
     model.compile(loss='mse', optimizer='adam', metrics=['mae', tf.keras.metrics.CosineSimilarity(axis=1)])
